@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Players – PLAYPAIR NETWORK</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+  <style>
+    .alert-success {
+      color: #00ff88 !important;
+      border-color: #00ff88 !important;
+    }
+
+    .alert-warning {
+      color: #ffcc00 !important;
+      border-color: #ffcc00 !important;
+    }
+
+    .alert-error {
+      color: #ff4444 !important;
+      border-color: #ff4444 !important;
+    }
+
+    .online-indicator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 12px;
+      height: 12px;
+      background: #00ff88;
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      z-index: 5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'index_view' %}">Home</a></li>
+      <li><a href="{% url 'players_view' %}">Players</a></li>
+      <li><a href="{% url 'chat_home' %}">Messages</a></li>
+      <li><a href="{% url 'teams_view' %}">Teams</a></li>
+      <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+      <li><a href="{% url 'matches_view' %}">Matches</a></li>
+      <li>{% comment %} <a href="{% url 'dashboard_view' %}">Dashboard</a> {% endcomment %}</li>
+    </ul>
+    <div class="nav-auth">
+
+      {% if user.is_authenticated %}
+      <a href="{% url 'my_requests' %}" class="btn-ghost" style="color:var(--accent);">My Requests</a>
+      <span style="color:var(--accent); font-weight:500;">
+        👋 {{ user.username }}
+      </span>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+      {% else %}
+      <a href="{% url 'login_view' %}" class="btn-ghost">Login</a>
+      <a href="{% url 'register_view' %}" class="btn-primary">Register</a>
+      {% endif %}
+
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  {% if messages %}
+  <div class="messages-container" style="padding: 1rem 5%; background: var(--bg);">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}"
+      style="padding: 1rem; margin-bottom: 1rem; border-radius: 8px; background: var(--surface); border: 1px solid var(--border);">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="breadcrumb"><a href="{% url 'index_view' %}">Home</a> / Players</div>
+      <div class="tag">PLAYER ROSTER</div>
+      <h1>All <span class="accent">Players</span></h1>
+      <p>Browse all registered players, their stats, teams, and performance records across all sports.</p>
+    </div>
+  </section>
+
+  <div class="page-content">
+
+    <!-- STATS ROW -->
+    <div class="kpi-row" style="margin-bottom:2rem;">
+      <div class="kpi-card kpi-1">
+        <div class="kpi-icon">👤</div>
+        <div class="kpi-label">Total Players</div>
+        <div class="kpi-value">{{ total_players }}</div>
+        <div class="kpi-change">Registered accounts</div>
+      </div>
+      <div class="kpi-card kpi-2">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-label">Active Players</div>
+        <div class="kpi-value">{{ active_players }}</div>
+        <div class="kpi-change">Online currently</div>
+      </div>
+      <div class="kpi-card kpi-3">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-label">Pending Approval</div>
+        <div class="kpi-value">{{ pending_approval }}</div>
+        <div class="kpi-change">Awaiting connection</div>
+      </div>
+      <div class="kpi-card kpi-4">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-label">Top Scorers</div>
+        <div class="kpi-value">{{ top_scorers_count }}</div>
+        <div class="kpi-change">Score over 200</div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <form class="filter-bar" method="GET" action="{% url 'players_view' %}">
+      <input type="text" name="search" placeholder="🔍 Search players by name or position..." value="{{ request.GET.search|default:'' }}">
+      <select name="sport">
+        <option value="">All Sports</option>
+        {% for s in sports %}
+        <option value="{{ s.id }}" {% if request.GET.sport == s.id|stringformat:"i" %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+      <select name="team">
+        <option value="">All Teams</option>
+        {% for t in teams %}
+        <option value="{{ t.id }}" {% if request.GET.team == t.id|stringformat:"i" %}selected{% endif %}>{{ t.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-primary" style="border:none; cursor:pointer;">Filter</button>
+    </form>
+
+    <!-- PLAYERS GRID -->
+    <div class="content-grid">
+      {% for p in pla %}
+      <div class="player-card">
+
+        <div class="player-card-img" style="position: relative;">
+          <img src="{{ p.photo.url }}" alt="Player">
+          <div class="player-num">{{ p.jersey_number }}</div>
+          {% if p.is_online %}
+          <div class="online-indicator"></div>
+          {% endif %}
+        </div>
+        <div class="player-card-body">
+          <h3>{{ p.name }}</h3>
+          <div style="font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-bottom: 0.3rem;">
+            {{ p.sport.name }}
+          </div>
+          <span class="player-pos">Position: {{ p.position }} </span>
+          <div class="player-stats-row">
+            <div class="pstat">Matches <span>{{ p.total_matches }}</span></div>
+            <div class="pstat">Total_score <span>{{ p.total_score }}</span></div>
+          </div>
+
+          <div class="player-card-footer"
+            style="border-top: 1px solid var(--border); margin-top: 1.2rem; padding-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
+            {% if user.is_authenticated %}
+            {% if p.name == current_user_name %}
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 100%;">
+              <span class="tag"
+                style="background: rgba(58, 142, 255, 0.1); border-color: rgba(58, 142, 255, 0.3); color: var(--accent2);">IT'S
+                YOU</span>
+              {% if pending_received_count > 0 %}
+              <a href="{% url 'my_requests' %}" class="btn-primary"
+                style="width: 100%; text-align: center; background: var(--green); color: #fff;">
+                {{ pending_received_count }} New Request{{ pending_received_count|pluralize }}
+              </a>
+              {% endif %}
+              <a href="{% url 'profile_view' %}" class="btn-ghost"
+                style="width: 100%; text-align: center; border-color: var(--accent2); color: var(--accent2);">Edit
+                Profile</a>
+            </div>
+            {% elif p.id in accepted_player_ids %}
+            <a href="{% url 'chat_with_user' p.name %}" class="btn-primary"
+              style="display: block; text-align: center; text-decoration: none; width: 100%; background: var(--accent); color: #000;">Chat
+              Now</a>
+            {% elif p.id in requested_player_ids %}
+            <div class="status-sent"
+              style="display: block; text-align: center; border: 1px solid var(--accent); color: var(--accent); padding: 0.6rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; background: rgba(0, 255, 136, 0.05);">
+              Request Sent
+            </div>
+            {% else %}
+            <a href="{% url 'send_request' p.id %}" class="btn-primary"
+              style="display: block; text-align: center; text-decoration: none; width: 100%;">Send Request</a>
+            {% endif %}
+            {% else %}
+            <a href="{% url 'login_view' %}" class="btn-ghost"
+              style="display: block; text-align: center; text-decoration: none; width: 100%;">Login to Request</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- PAGINATION -->
+    {% if page_obj.has_other_pages %}
+    <div style="display:flex;justify-content:center;gap:.5rem;margin-top:3rem;flex-wrap:wrap;">
+      
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+        style="padding:.6rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.9rem;text-decoration:none;color:inherit;">← Prev</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span style="padding:.6rem 1rem;background:var(--accent);color:#080c14;border-radius:8px;font-size:.9rem;font-weight:700;">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+          style="padding:.6rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.9rem;text-decoration:none;color:inherit;">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+        style="padding:.6rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.9rem;text-decoration:none;color:inherit;">Next →</a>
+      {% endif %}
+
+    </div>
+    {% endif %}
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-icon">⚡</span>PPN</div>
+        <p>PLAYPAIR NETWORK — A modular sports management platform.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Platform</h5>
+        <a href="{% url 'players_view' %}">Players</a>
+        <a href="{% url 'teams_view' %}">Teams</a>
+        <a href="{% url 'tournaments_view' %}">Tournaments</a>
+        <a href="{% url 'matches_view' %}">Matches</a>
+      </div>
+      <div class="footer-links">
+        <h5>Access</h5>
+        <a href="{% url 'login_view' %}">Login</a>
+        <a href="{% url 'register_view' %}">Register</a>
+        {% comment %} <a href="{% url 'dashboard_view' %}">Dashboard</a> {% endcomment %}
+      </div>
+      <div class="footer-links">
+        {% comment %} <h5>About</h5>
+        <a href="#">Django Architecture</a>
+        <a href="#">College Project</a> {% endcomment %}
+      </div>
+    </div>
+    <div class="footer-bottom">
+      {% comment %} <span>© 2025 Sports Player Hub</span>
+      <span>Built with Django • adminapp & userapp</span> {% endcomment %}
+    </div>
+  </footer>
+
+  <script src="{% static 'userapp/script.js' %}"></script>
+</body>
+
+</html>

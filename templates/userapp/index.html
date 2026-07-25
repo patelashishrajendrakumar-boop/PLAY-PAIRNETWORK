@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLAYPAIR NETWORK – Home</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+</head>
+
+<body class="page-home">
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'index_view' %}">Home</a></li>
+      <li><a href="{% url 'players_view' %}">Players</a></li>
+      <li><a href="{% url 'chat_home' %}">Messages</a></li>
+      <li><a href="{% url 'teams_view' %}">Teams</a></li>
+      <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+      <li><a href="{% url 'matches_view' %}">Matches</a></li>
+      {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+    </ul>
+    <div class="nav-auth">
+
+      {% if user.is_authenticated %}
+      <span style="color:var(--accent); font-weight:500;">
+        👋 {{ user.username }}
+      </span>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+      {% else %}
+      <a href="{% url 'login_view' %}" class="btn-ghost">Login</a>
+      <a href="{% url 'register_view' %}" class="btn-primary">Register</a>
+      {% endif %}
+
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1600&q=80" alt="Sports" class="hero-img">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      {% comment %} <div class="hero-tag">🏆 College Sports Management Platform</div> {% endcomment %}
+
+      <h1 class="hero-title">PLAYPAIR<br><span class="accent">NETWORK</span><br></h1>
+      <p class="hero-sub">The ultimate digital arena for managing players, teams, tournaments, and performance—all in
+        one powerful platform.</p>
+
+      {% comment %} <div class="hero-btns">
+        <a href="{% url 'register_view' %}" class="btn-primary btn-lg">Get Started Free</a>
+        <a href="{% url 'dashboard_view' %}" class="btn-outline btn-lg">View Dashboard</a>
+      </div> {% endcomment %}
+
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-n">{{ total_players }}+</span><span class="stat-l">Players</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-n">{{ total_teams }}</span><span class="stat-l">Teams</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-n">{{ total_tournaments }}</span><span class="stat-l">Tournaments</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-n">{{ total_matches }}+</span><span class="stat-l">Matches</span></div>
+      </div>
+    </div>
+    <div class="hero-scroll">SCROLL DOWN ↓</div>
+  </section>
+
+
+  <!-- FEATURES -->
+  <section class="section features-section">
+    <div class="section-header">
+      <div class="tag">WHY CHOOSE US</div>
+      <h2>Everything You Need to <span class="accent">Manage Sports</span></h2>
+      <p>Two-app modular architecture built for schools, colleges, and sports academies.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card" style="--delay:0s">
+        <div class="feat-icon">🔐</div>
+        <h3>Role-Based Access</h3>
+        <p>Admins, Coaches, and Players each have dedicated secure portals with tailored features and permissions.</p>
+      </div>
+      <div class="feature-card" style="--delay:.1s">
+        <div class="feat-icon">📊</div>
+        <h3>Live Analytics</h3>
+        <p>Real-time dashboards with performance charts, rankings, and exportable reports in PDF and Excel.</p>
+      </div>
+      <div class="feature-card" style="--delay:.2s">
+        <div class="feat-icon">🏆</div>
+        <h3>Tournament Engine</h3>
+        <p>Create tournaments, schedule matches, register teams, and track brackets automatically.</p>
+      </div>
+      <div class="feature-card" style="--delay:.3s">
+        <div class="feat-icon">👟</div>
+        <h3>Player Profiles</h3>
+        <p>Full player stats, match history, rankings, achievements, and performance tracking in one profile.</p>
+      </div>
+      <div class="feature-card" style="--delay:.4s">
+        <div class="feat-icon">🤝</div>
+        <h3>Team Management</h3>
+        <p>Coaches manage rosters, update stats, monitor team analytics, and communicate schedules.</p>
+      </div>
+      <div class="feature-card" style="--delay:.5s">
+        <div class="feat-icon">📱</div>
+        <h3>Responsive Design</h3>
+        <p>Access from any device — desktop, tablet, or mobile — with a fully adaptive interface.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPORTS GALLERY -->
+  <section class="sports-strip">
+    <div class="strip-label">SUPPORTED SPORTS</div>
+    <div class="sports-scroll">
+      <div class="sport-pill">⚽ Football</div>
+      <div class="sport-pill">🏏 Cricket</div>
+      <div class="sport-pill">🏀 Basketball</div>
+      <div class="sport-pill">🎾 Tennis</div>
+      <div class="sport-pill">🏐 Volleyball</div>
+      <div class="sport-pill">🏊 Swimming</div>
+      <div class="sport-pill">🏃 Athletics</div>
+      <div class="sport-pill">🥊 Boxing</div>
+      <div class="sport-pill">⚽ Football</div>
+      <div class="sport-pill">🏏 Cricket</div>
+      <div class="sport-pill">🏀 Basketball</div>
+      <div class="sport-pill">🎾 Tennis</div>
+    </div>
+  </section>
+
+  <!-- ROLES SECTION -->
+  <section class="section roles-section">
+    <div class="section-header">
+      <div class="tag">PLATFORM ROLES</div>
+      <h2>One Platform, <span class="accent">Three Roles</span></h2>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card role-admin">
+        <div class="role-img-wrap">
+          <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&q=80" alt="Admin">
+        </div>
+        <div class="role-info">
+          <div class="role-badge">ADMIN</div>
+          <h3>Full System Control</h3>
+          <ul>
+            <li>✓ Approve/reject registrations</li>
+            <li>✓ Manage all players & teams</li>
+            <li>✓ Create & oversee tournaments</li>
+            <li>✓ Generate system reports</li>
+            <li>✓ Monitor all activity</li>
+          </ul>
+          <a href="{% url 'login_view' %}" class="btn-primary">Admin Portal →</a>
+        </div>
+      </div>
+      <div class="role-card role-coach">
+        <div class="role-img-wrap">
+          <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80" alt="Coach">
+        </div>
+        <div class="role-info">
+          <div class="role-badge" style="background:#f59e0b">COACH</div>
+          <h3>Team Management</h3>
+          <ul>
+            <li>✓ Manage assigned team</li>
+            <li>✓ Update player performance</li>
+            <li>✓ View tournament schedules</li>
+            <li>✓ Monitor team statistics</li>
+            <li>✓ Track match history</li>
+          </ul>
+          <a href="{% url 'login_view' %}" class="btn-primary" style="background:#f59e0b">Coach Portal →</a>
+        </div>
+      </div>
+      <div class="role-card role-player">
+        <div class="role-img-wrap">
+          <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80" alt="Player">
+        </div>
+        <div class="role-info">
+          <div class="role-badge" style="background:#10b981">PLAYER</div>
+          <h3>Personal Dashboard</h3>
+          <ul>
+            <li>✓ Register & update profile</li>
+            <li>✓ View match schedules</li>
+            <li>✓ Track performance history</li>
+            <li>✓ View tournament participation</li>
+            <li>✓ Download personal reports</li>
+          </ul>
+          <a href="{% url 'register_view' %}" class="btn-primary" style="background:#10b981">Join as Player →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LATEST MATCHES -->
+  <section class="section matches-preview">
+    <div class="section-header">
+      <div class="tag">LIVE & RECENT</div>
+      <h2>Latest <span class="accent">Matches</span></h2>
+    </div>
+    <div class="matches-list">
+      {% for m in latest_matches %}
+      <div class="match-card {% if m.match_date == now %}live{% elif m.match_date > now %}upcoming{% endif %}">
+        <div class="match-status {% if m.match_date == now %}live-badge{% elif m.match_date > now %}upcoming-badge{% else %}completed-badge{% endif %}">
+          {% if m.match_date == now %}🔴 LIVE{% elif m.match_date > now %}📅 UPCOMING{% else %}✅ COMPLETED{% endif %}
+        </div>
+        <div class="match-body">
+          <div class="team-side"><img src="https://images.unsplash.com/photo-1606925797300-0b35e9d1794e?w=80&q=80"
+              alt="Team" class="team-logo-sm"><span>{{ m.team_one }}</span></div>
+          {% if m.match_date > now %}
+          <div class="score-box"><span class="vs-lg">VS</span></div>
+          {% else %}
+          <div class="score-box"><span class="score">{{ m.team_one_score }}</span><span class="vs">–</span><span class="score">{{ m.team_two_score }}</span></div>
+          {% endif %}
+          <div class="team-side"><img src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=80&q=80"
+              alt="Team" class="team-logo-sm"><span>{{ m.team_two }}</span></div>
+        </div>
+        <div class="match-meta">{{ m.tournament.name }} • {{ m.venue }} • {{ m.match_date }}</div>
+      </div>
+      {% empty %}
+      <p style="text-align:center; color:var(--muted);">No recent matches found.</p>
+      {% endfor %}
+    </div>
+    <div class="center-btn"><a href="{% url 'matches_view' %}" class="btn-outline">View All Matches →</a></div>
+  </section>
+
+  <!-- ANNOUNCEMENT BANNER -->
+  {% if announcement %}
+  <section class="announcement-banner">
+    <div class="ann-inner">
+      <div class="ann-icon">📢</div>
+      <div class="ann-text">
+        <strong>{{ announcement.title }}</strong> — {{ announcement.message }}
+      </div>
+      <a href="{% url 'tournaments_view' %}" class="btn-primary">Register Now</a>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- TOP PLAYERS TEASER -->
+  <section class="section top-players-section">
+    <div class="section-header">
+      <div class="tag">STAR PERFORMERS</div>
+      <h2>Top <span class="accent">Players</span> This Season</h2>
+    </div>
+    <div class="players-row">
+      {% for p in top_players %}
+      <div class="player-mini {% if forloop.counter == 2 %}featured{% endif %}">
+        <div class="rank-badge">{% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}👑{% else %}🥉{% endif %}</div>
+        <img src="{{ p.photo.url }}" alt="{{ p.name }}">
+        <h4>{{ p.name }}</h4>
+        <span class="pos-tag">{{ p.position }} • {{ p.team.name|default:"Independent" }}</span>
+        <div class="mini-stats"><span>Matches: {{ p.total_matches }}</span><span>Score: {{ p.total_score }}</span></div>
+      </div>
+      {% empty %}
+      <p style="text-align:center; color:var(--muted); width:100%;">Join now to become a star performer!</p>
+      {% endfor %}
+    </div>
+    <div class="center-btn"><a href="{% url 'players_view' %}" class="btn-outline">View All Players →</a></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-icon">⚡</span>PPN</div>
+        <p>PLAYPAIR NETWORK — A modular sports management platform for colleges, schools, and sports academies.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Platform</h5>
+        <a href="{% url 'players_view' %}">Players</a>
+        <a href="{% url 'teams_view' %}">Teams</a>
+        <a href="{% url 'tournaments_view' %}">Tournaments</a>
+        <a href="{% url 'matches_view' %}">Matches</a>
+      </div>
+      <div class="footer-links">
+        <h5>Access</h5>
+        <a href="{% url 'login_view' %}">Admin Login</a>
+        {% comment %} <a href="{% url 'login_view' %}">Coach Login</a> {% endcomment %}
+        <a href="{% url 'register_view' %}">Player Register</a>
+        {% comment %} <a href="{% url 'dashboard_view' %}">Dashboard</a> {% endcomment %}
+      </div>
+      <div class="footer-links">
+        {% comment %} <h5>About</h5>
+        <a href="#">Documentation</a>
+        <a href="#">College Project</a>
+        <a href="#">Django Architecture</a> {% endcomment %}
+      </div>
+    </div>
+    {% comment %} <div class="footer-bottom">
+      <span>© 2025 Sports Player Hub — College Project</span>
+      <span>Built with Django • adminapp & userapp</span>
+    </div> {% endcomment %}
+  </footer>
+
+  <script src="{% static 'userapp/script.js' %}"></script>
+</body>
+
+</html>

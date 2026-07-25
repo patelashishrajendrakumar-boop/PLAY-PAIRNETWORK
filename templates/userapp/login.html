@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login – PLAYPAIR NETWORK</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+</head>
+
+<body>
+
+<div class="auth-layout">
+
+  <!-- LEFT SIDE SAME -->
+  <div class="auth-left">
+    <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=900&q=80">
+    <div class="auth-left-overlay">
+      <h2>PLAY.<br>COMPETE.<br><span style="color:var(--accent)">DOMINATE.</span></h2>
+      <p>Join thousands of players, coaches, and admins.</p>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="auth-right">
+    <div class="auth-form">
+
+      <h2 style="margin-top:1.5rem;">Welcome Back</h2>
+      <p>Sign in to your account.</p>
+
+      <!-- ✅ DJANGO MESSAGES -->
+      {% if messages %}
+        {% for message in messages %}
+          <div style="color:red; margin-bottom:10px;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- ✅ FORM START -->
+      <form method="POST">
+        {% csrf_token %}
+        <!-- USERNAME -->
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Enter your username" required>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter your password" required>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;">
+            <input type="checkbox" style="width:auto;accent-color:var(--accent)"> Remember me
+          </label>
+          <a href="#" style="color:var(--accent);font-size:.85rem;">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="form-submit">Sign In →</button>
+
+      </form>
+
+      <!-- REGISTER -->
+      <div class="auth-switch">
+        Don't have an account?
+        <a href="{% url 'register_view' %}">Register here →</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="{% static 'userapp/script.js' %}"></script>
+
+<script>
+function selectRole(el, role) {
+  document.querySelectorAll('.role-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+
+</body>
+</html>

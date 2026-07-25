@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chat – PPN{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+    <style>
+        :root {
+            --wa-bg: #0b141a;
+            --wa-sidebar: #111b21;
+            --wa-header: #202c33;
+            --wa-msg-sent: #005c4b;
+            --wa-msg-received: #202c33;
+            --wa-text: #e9edef;
+            --wa-text-dim: #8696a0;
+            --wa-accent: #00a884;
+        }
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background: #0c1317;
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            background: var(--wa-bg);
+            color: var(--wa-text);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 30%;
+            min-width: 300px;
+            max-width: 450px;
+            background: var(--wa-sidebar);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            height: 60px;
+            background: var(--wa-header);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #6a7175;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .search-container {
+            padding: 8px 12px;
+            background: var(--wa-sidebar);
+        }
+
+        .search-box {
+            background: var(--wa-header);
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--wa-text);
+            width: 100%;
+            padding: 4px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .chat-list {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .chat-item:hover {
+            background: #202c33;
+        }
+
+        .chat-item.active {
+            background: #2a3942;
+        }
+
+        .chat-item-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .chat-item-name {
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .chat-item-last-msg {
+            font-size: 0.85rem;
+            color: var(--wa-text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Main Chat Area */
+        .main-chat {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0b141a;
+            position: relative;
+        }
+
+        /* Pattern overlay */
+        .main-chat::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            opacity: 0.06;
+            pointer-events: none;
+        }
+
+        .chat-header {
+            height: 60px;
+            background: var(--wa-header);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px 5%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 5;
+            scrollbar-width: thin;
+        }
+
+        .msg {
+            max-width: 65%;
+            padding: 6px 10px 8px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            position: relative;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .msg-sent {
+            align-self: flex-end;
+            background: var(--wa-msg-sent);
+            border-top-right-radius: 0;
+        }
+
+        .msg-received {
+            align-self: flex-start;
+            background: var(--wa-msg-received);
+            border-top-left-radius: 0;
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            align-self: flex-end;
+            margin-top: 2px;
+        }
+
+        .input-area {
+            height: 62px;
+            background: var(--wa-header);
+            padding: 5px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .input-box {
+            flex-grow: 1;
+            background: #2a3942;
+            border-radius: 20px;
+            padding: 9px 15px;
+            border: none;
+            color: var(--wa-text);
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .send-btn {
+            background: transparent;
+            border: none;
+            color: var(--wa-text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .send-btn:hover {
+            color: var(--wa-text);
+        }
+
+        .placeholder-screen {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--wa-text-dim);
+            padding: 20px;
+        }
+
+        .placeholder-screen h1 {
+            color: var(--wa-text);
+            margin-bottom: 10px;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .nav-back {
+            color: var(--wa-accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .delete-chat-btn {
+            color: var(--wa-text-dim);
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-chat-btn:hover {
+            color: #ef4444;
+        }
+
+        .delete-msg {
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            font-size: 1.2rem;
+            line-height: 1;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+        }
+
+        .msg:hover .delete-msg {
+            opacity: 1;
+        }
+
+        .delete-msg:hover {
+            color: #ef4444 !important;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid var(--wa-sidebar);
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="profile-pic">
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <a href="{% url 'index_view' %}" title="Home"
+                        style="color: var(--wa-text-dim); text-decoration: none;">🏠</a>
+                    <a href="{% url 'players_view' %}" title="Players"
+                        style="color: var(--wa-text-dim); text-decoration: none;">👤</a>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" placeholder="Search or start new chat">
+                </div>
+            </div>
+
+            <div class="chat-list">
+                {% for acc_user in accepted_users %}
+                <a href="{% url 'chat_with_user' acc_user.username %}"
+                    class="chat-item {% if other_user.username == acc_user.username %}active{% endif %}">
+                    <div class="profile-pic" style="background: var(--accent); position: relative;">
+                        {{ acc_user.username|slice:":1"|upper }}
+                        {% if acc_user.is_online %}
+                        <div class="online-dot"></div>
+                        {% endif %}
+                    </div>
+                    <div class="chat-item-info">
+                        <div class="chat-item-name">
+                            <span>{{ acc_user.username }}</span>
+                            <span style="font-size: 0.75rem; color: var(--wa-text-dim);">
+                                {% if acc_user.last_msg %}{{ acc_user.last_msg.timestamp|date:"H:i" }}{% endif %}
+                            </span>
+                        </div>
+                        <div class="chat-item-last-msg">
+                            {% if acc_user.last_msg %}{{ acc_user.last_msg.content|truncatechars:30 }}{% else %}Click to
+                            start chatting{% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div style="padding: 20px; text-align: center; color: var(--wa-text-dim);">
+                    No accepted requests yet.<br>
+                    <a href="{% url 'players_view' %}" style="color: var(--wa-accent);">Find Players</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-chat">
+            {% block chat_content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block extra_script %}{% endblock %}
+</body>
+
+</html> 

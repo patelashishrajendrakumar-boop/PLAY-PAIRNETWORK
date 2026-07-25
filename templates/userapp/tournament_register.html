@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register for {{ tournament.name }} – PLAYPAIR NETWORK</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+  <style>
+    .form-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: var(--surface);
+      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(232, 255, 58, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(232, 255, 58, 0.1);
+    }
+
+    .tournament-summary {
+      background: rgba(232, 255, 58, 0.05);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .tournament-summary h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .tourn-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'index_view' %}">Home</a></li>
+      <li><a href="{% url 'players_view' %}">Players</a></li>
+      <li><a href="{% url 'teams_view' %}">Teams</a></li>
+      <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+      <li><a href="{% url 'matches_view' %}">Matches</a></li>
+      {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+    </ul>
+    <div class="nav-auth">
+      {% if user.is_authenticated %}
+      <span style="color:var(--accent); font-weight:500;">
+        👋 {{ user.username }}
+      </span>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+      {% else %}
+      <a href="{% url 'login_view' %}" class="btn-ghost">Login</a>
+      <a href="{% url 'register_view' %}" class="btn-primary">Register</a>
+      {% endif %}
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="breadcrumb"><a href="{% url 'tournaments_view' %}">Tournaments</a> / Register</div>
+      <div class="tag">🏆 REGISTRATION</div>
+      <h1>Tournament <span class="accent">Entry</span></h1>
+      <p>Fill in your details to participate in {{ tournament.name }}.</p>
+    </div>
+  </section>
+
+  <div class="page-content">
+    {% if messages %}
+    <div style="max-width: 600px; margin: 0 auto 2rem;">
+      {% for message in messages %}
+      <div
+        style="padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid; 
+                  {% if message.tags == 'success' %} background: rgba(16,185,129,0.1); border-color: var(--green); color: var(--green);
+                  {% elif message.tags == 'error' %} background: rgba(255,68,68,0.1); border-color: var(--red); color: var(--red);
+                  {% elif message.tags == 'warning' %} background: rgba(245,158,11,0.1); border-color: var(--gold); color: var(--gold);
+                  {% else %} background: rgba(58,142,255,0.1); border-color: var(--accent2); color: var(--accent2); {% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="form-container">
+      <div class="tournament-summary">
+        <h2>{{ tournament.name }}</h2>
+        <div class="tourn-meta">
+          <span>{{ tournament.sport.name }}</span>
+          <span>📅 {{ tournament.start_date }}</span>
+          <span>📍 {{ tournament.location }}</span>
+        </div>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div style="color: var(--red); font-size: 0.8rem; margin-top: 0.3rem;">
+            {{ field.errors }}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <div style="margin-top: 2rem;">
+          <button type="submit" class="btn-primary btn-lg" style="width: 100%;">Complete Registration →</button>
+        </div>
+
+        <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">
+          By registering, you agree to the tournament's rules and regulations.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-icon">⚡</span>PPN</div>
+        <p>PLAYPAIR NETWORK — Modular sports management.</p>
+      </div>
+    </div>
+    {% comment %} <div class="footer-bottom"><span>© 2025 Sports Player Hub</span></div> {% endcomment %}
+  </footer>
+  <script src="{% static 'userapp/script.js' %}"></script>
+</body>
+
+</html>

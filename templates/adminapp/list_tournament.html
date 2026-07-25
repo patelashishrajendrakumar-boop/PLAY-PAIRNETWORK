@@ -1,0 +1,257 @@
+{% extends 'adminapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<main class="nxl-container">
+        <div class="nxl-content">
+            <!-- [ page-header ] start -->
+            <div class="page-header">
+                <div class="page-header-left d-flex align-items-center">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Tournament</h5>
+                    </div>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item">List</li>
+                    </ul>
+                </div>
+                <div class="page-header-right ms-auto">
+                    <div class="page-header-right-items">
+                        <div class="d-flex d-md-none">
+                            <a href="javascript:void(0)" class="page-header-right-close-toggle">
+                                <i class="feather-arrow-left me-2"></i>
+                                <span>Back</span>
+                            </a>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+                            <div class="dropdown filter-dropdown">
+                                <a class="btn btn-md btn-light-brand" data-bs-toggle="dropdown" data-bs-offset="0, 10" data-bs-auto-close="outside">
+                                    <i class="feather-filter me-2"></i>
+                                    <span>Filter</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <div class="dropdown-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="Role" checked="checked">
+                                            <label class="custom-control-label c-pointer" for="Role">Role</label>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="Team" checked="checked">
+                                            <label class="custom-control-label c-pointer" for="Team">Team</label>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="Email" checked="checked">
+                                            <label class="custom-control-label c-pointer" for="Email">Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="Member" checked="checked">
+                                            <label class="custom-control-label c-pointer" for="Member">Member</label>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="Recommendation" checked="checked">
+                                            <label class="custom-control-label c-pointer" for="Recommendation">Recommendation</label>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <i class="feather-plus me-3"></i>
+                                        <span>Create New</span>
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item">
+                                        <i class="feather-filter me-3"></i>
+                                        <span>Manage Filter</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <a href="javascript:void(0);" class="btn btn-md btn-primary">
+                                <i class="feather-plus me-2"></i>
+                                <span>Add widget</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-md-none d-flex align-items-center">
+                        <a href="javascript:void(0)" class="page-header-right-open-toggle">
+                            <i class="feather-align-right fs-20"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- [ page-header ] end -->
+            <!-- [ Main Content ] start -->
+            <div class="main-content">
+                <div class="row">
+                    <!-- [Leads] start -->
+                    <div class="col-xxl-12">
+                        <div class="card stretch stretch-full">
+                            <div class="card-header">
+                                <h5 class="card-title">List Tournament</h5>
+                                <div class="card-header-action">
+                                    <div class="card-header-btn">
+                                        <div data-bs-toggle="tooltip" title="Delete">
+                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger" data-bs-toggle="remove"> </a>
+                                        </div>
+                                        <div data-bs-toggle="tooltip" title="Refresh">
+                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning" data-bs-toggle="refresh"> </a>
+                                        </div>
+                                        <div data-bs-toggle="tooltip" title="Maximize/Minimize">
+                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success" data-bs-toggle="expand"> </a>
+                                        </div>
+                                        <div data-bs-toggle="tooltip" title="update">
+                                            <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success" data-bs-toggle="update"> </a>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0);" class="avatar-text avatar-sm" data-bs-toggle="dropdown" data-bs-offset="25, 25">
+                                            <div data-bs-toggle="tooltip" title="Options">
+                                                <i class="feather-more-vertical"></i>
+                                            </div>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-at-sign"></i>New</a>
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-calendar"></i>Event</a>
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-bell"></i>Snoozed</a>
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-trash-2"></i>Deleted</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-settings"></i>Settings</a>
+                                            <a href="javascript:void(0);" class="dropdown-item"><i class="feather-life-buoy"></i>Tips & Tricks</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body custom-card-action p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr class="border-b">
+                                                {% comment %} <th scope="row">#</th> {% endcomment %}
+                                                <th>name</th>
+                                                <th>sport</th>
+                                                <th>start_date</th>
+                                                <th>end_date</th>
+                                                <th>location</th>
+                                                <th>prize</th>
+                                                <th>description</th>
+                                                <th>Total Teams</th>
+                                                <th>created_at</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for t in tournament %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.name}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.sport.name}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.start_date}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+
+                                                    <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.end_date}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.location}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                
+                                                
+                                                
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.prize}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.description}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <span class="d-block">{{t.total_teams}}</span>
+                                                    </div>
+                                                </td>
+
+                                                 <td>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                    
+                                                        <a href="javascript:void(0);">
+                                                            <span class="d-block">{{t.created_at}}</span>
+                                                            
+                                                        </a>
+                                                    </div>
+                                                 </td>
+                                                
+
+                                                <td class ="text-center align-middle">
+                                                    <a href="{% url 'update_tournament' t.id %}" class="btn btn-primary btn-sm" 
+                                                        style="padding:1px 0px; font-size:11px;">update</a>
+                                                </td>
+
+                                                <td class ="text-center align-middle">
+                                                    <a href="{% url 'delete_tournament' t.id %}" class="btn btn-danger btn-sm" 
+                                                        style="padding:1px 0px; font-size:11px;">Delete</a>
+                                                </td>
+                                                
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                    
+                </div>
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
+{% endblock %}       

@@ -1,0 +1,142 @@
+{% extends 'adminapp/master.html' %}
+{% load static %}
+{% block content %}
+
+<main class="nxl-container">
+    <div class="nxl-content">
+        <!-- [ page-header ] start -->
+        <div class="page-header">
+            <div class="page-header-left d-flex align-items-center">
+                <div class="page-header-title">
+                    <h5 class="m-b-10">Payment Details</h5>
+                </div>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'index1_view' %}">Home</a></li>
+                    <li class="breadcrumb-item">Payments</li>
+                </ul>
+            </div>
+        </div>
+        <!-- [ page-header ] end -->
+
+        <!-- [ Main Content ] start -->
+        <div class="main-content">
+            <!-- [ Payment Stats ] start -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-3">Total Revenue</h6>
+                                    <h4 class="mb-0">₹{{ total_revenue }}</h4>
+                                </div>
+                                <div class="avatar-text avatar-lg bg-soft-success text-success">
+                                    <i class="feather-dollar-sign"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-3">Completed Payments</h6>
+                                    <h4 class="mb-0">{{ completed_count }}</h4>
+                                </div>
+                                <div class="avatar-text avatar-lg bg-soft-primary text-primary">
+                                    <i class="feather-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div>
+                                    <h6 class="text-muted mb-3">Pending Payments</h6>
+                                    <h4 class="mb-0">{{ pending_count }}</h4>
+                                </div>
+                                <div class="avatar-text avatar-lg bg-soft-warning text-warning">
+                                    <i class="feather-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ Payment Stats ] end -->
+
+            <div class="row">
+                <div class="col-xxl-12">
+                    <div class="card stretch stretch-full">
+                        <div class="card-header">
+                            <h5 class="card-title">All Transaction Details</h5>
+                        </div>
+                        <div class="card-body custom-card-action p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr class="border-b">
+                                            <th>TRANSACTION ID</th>
+                                            <th>USER</th>
+                                            <th>TOURNAMENT</th>
+                                            <th>AMOUNT</th>
+                                            <th>STATUS</th>
+                                            <th>DATE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for reg in registrations %}
+                                        <tr>
+                                            <td>
+                                                <span class="text-muted">#TR-{{ reg.id|stringformat:"05d" }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="ms-0">
+                                                        <span class="d-block fw-bold">{{ reg.user.username }}</span>
+                                                        <span class="fs-12 text-muted">{{ reg.user.email }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="d-block">{{ reg.tournament.name }}</span>
+                                                <span class="fs-12 text-muted">{{ reg.tournament.sport.name }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-dark">₹{{ reg.tournament.entry_fee }}</span>
+                                            </td>
+                                            <td>
+                                                {% if reg.payment_status == 'completed' %}
+                                                <span class="badge bg-soft-success text-success">Completed</span>
+                                                {% else %}
+                                                <span class="badge bg-soft-warning text-warning">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="d-block">{{ reg.registration_date|date:"M d, Y" }}</span>
+                                                <span class="fs-12 text-muted">{{ reg.registration_date|date:"H:i A" }}</span>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center p-5">No payment records found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</main>
+
+{% endblock %}

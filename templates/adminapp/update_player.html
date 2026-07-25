@@ -1,0 +1,130 @@
+{% extends 'adminapp/master.html' %}
+{% load static %}
+{% block content %}
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <main class="nxl-container apps-container">
+        <div class="nxl-content without-header nxl-full-content">
+            <!-- [ Main Content ] start -->
+            <div class="main-content d-flex">
+                <!-- [ Main Area  ] start -->
+                <div class="content-area" data-scrollbar-target="#psScrollbarInit">
+                    <div class="content-area-header bg-white sticky-top">
+                        <div class="page-header-left">
+                            <a href="javascript:void(0);" class="app-sidebar-open-trigger me-2">
+                                <i class="feather-align-left fs-24"></i>
+                            </a>
+                        </div>
+                        <div class="page-header-right ms-auto">
+                            <div class="d-flex align-items-center gap-3 page-header-right-items-wrapper">
+                                <a href="javascript:void(0);" class="text-danger">Cancel</a>
+                                <a href="javascript:void(0);" class="btn btn-primary successAlertMessage">
+                                    <i class="feather-save me-2"></i>
+                                    <span>Save Changes</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-area-body">
+                        <div class="card mb-0">
+                            <div class="card-body">
+
+                                <!-- ================= IMAGE UPLOAD ================= -->
+                                <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="mb-5">
+                                        <h5 class="card-title">Create Player</h5> 
+                                        {% comment %} <div
+                                        class="wd-100 ht-100 position-relative overflow-hidden border border-gray-2 rounded">
+                                         <img src="{% static 'adminapp/assets/images/logo-abbr.png' %}"
+                                            class="upload-pic img-fluid rounded h-100 w-100" alt="">
+                                            <div
+                                             class="position-absolute start-50 top-50 translate-middle h-100 w-100 hstack align-items-center justify-content-center c-pointer upload-button">
+                                             <i class="feather feather-camera"></i>
+                                            </div>
+                                            <input class="file-upload" type="file" accept="image/*">
+                                        </div> {% endcomment %}
+                                    </div>
+
+                                 <!-- ================= BASIC INPUTS ================= -->
+                                    <div class="mb-1">
+                                         <label class="form-label">name</label>
+                                         <input type="text"  name="name" value="{{player.name}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class=" mb-5">
+                                        <label for="inputText" class="col-sm-2 col-form-label">Team</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-select" name="team" id="floatingSelect" aria-label="Floating label select example">
+                                                <option selected>Open this select menu</option>
+                                                {% for l in team %}
+                                                <option value="{{l.id}}">{{l.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-5">
+                                         <label class="form-label">Photo</label>
+                                         <input type="file" name="photo" value="{{player.photo.url}}" class="form-control">
+                                    </div>
+
+                                    <div class="1">
+                                         <label class="form-label">Jersey_number</label>
+                                         <input type="number"  name="jersey_number" value="{{player.jersey_number}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Position</label>
+                                         <input type="number"  name="position" value="{{player.position}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+                                    
+                                    <div class="mb-1">
+                                         <label class="form-label">Height</label>
+                                         <input type="number"  name="height" value="{{player.height}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Weight</label>
+                                         <input type="number"  name="weight" value="{{player.weight}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Total_matches</label>
+                                         <input type="number"  name="total_matches"  value="{{player.total_matches}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Total_score</label>
+                                         <input type="number"  name="total_score" value="{{player.total_score}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+                                
+
+                                 <!-- ================= DATE ================= -->
+                                    <div class="mb-1">
+                                         <label class="form-label">Created_at</label>
+                                         <input type="date" name="created_at" value="{{player.created_at|date:'y-m-d'}}" class="form-control">
+                                    </div>
+
+                                 <!-- ================= SUBMIT BUTTON ================= -->
+                                    <div class="mb-0 text-end">
+                                        <button type="reset" class="btn btn-light me-2">Reset</button>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+{% endblock %}

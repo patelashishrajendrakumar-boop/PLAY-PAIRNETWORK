@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournaments – PLAYPAIR NETWORK</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+</head>
+
+<body>
+  <nav class="navbar">
+    <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'index_view' %}">Home</a></li>
+      <li><a href="{% url 'players_view' %}">Players</a></li>
+      <li><a href="{% url 'teams_view' %}">Teams</a></li>
+      <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+      <li><a href="{% url 'matches_view' %}">Matches</a></li>
+      {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+    </ul>
+    <div class="nav-auth">
+      {% if user.is_authenticated %}
+      <span style="color:var(--accent); font-weight:500;">
+        👋 {{ user.username }}
+      </span>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+      {% else %}
+      <a href="{% url 'login_view' %}" class="btn-ghost">Login</a>
+      <a href="{% url 'register_view' %}" class="btn-primary">Register</a>
+      {% endif %}
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+
+
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="breadcrumb"><a href="{% url 'index_view' %}">Home</a> / Tournaments</div>
+      <div class="tag">🏆 TOURNAMENTS</div>
+      <h1>All <span class="accent">Tournaments</span></h1>
+      <p>Browse active, upcoming and completed tournaments. Register your team and compete for glory.</p>
+    </div>
+  </section>
+
+  <div class="page-content">
+    {% if messages %}
+    <div style="margin-bottom: 2rem;">
+      {% for message in messages %}
+      <div style="padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid; 
+                  {% if message.tags == 'success' %} background: rgba(16,185,129,0.1); border-color: var(--green); color: var(--green);
+                  {% elif message.tags == 'error' %} background: rgba(255,68,68,0.1); border-color: var(--red); color: var(--red);
+                  {% elif message.tags == 'warning' %} background: rgba(245,158,11,0.1); border-color: var(--gold); color: var(--gold);
+                  {% else %} background: rgba(58,142,255,0.1); border-color: var(--accent2); color: var(--accent2); {% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- FEATURED TOURNAMENT -->
+    {% comment %} <div
+      style="background:var(--surface);border:1px solid rgba(232,255,58,.3);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:2.5rem;display:grid;grid-template-columns:1fr 1fr;">
+      <div style="position:relative;height:300px;">
+        <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&q=80" alt="Tournament"
+          style="width:100%;height:100%;object-fit:cover;">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(8,12,20,.8))"></div>
+        <div
+          style="position:absolute;top:1rem;left:1rem;background:var(--red);color:#fff;padding:.4rem .8rem;border-radius:6px;font-size:.75rem;font-weight:700;">
+          🔴 REGISTRATION OPEN</div>
+      </div>
+      <div style="padding:2.5rem;display:flex;flex-direction:column;justify-content:center;">
+        <div class="tag" style="margin-bottom:1rem;">FEATURED TOURNAMENT</div>
+        <h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:.5rem;">National Inter-College <span
+            class="accent">Cup 2025</span></h2>
+        <p style="color:var(--muted);margin-bottom:1.5rem;">The premier inter-college football championship. 16 teams.
+          32 matches. One champion.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+          <div style="background:var(--surface2);padding:.8rem 1rem;border-radius:8px;font-size:.85rem;">
+            <div style="color:var(--muted);font-size:.75rem;">DATES</div><strong>Mar 20 – Apr 10, 2025</strong>
+          </div>
+          <div style="background:var(--surface2);padding:.8rem 1rem;border-radius:8px;font-size:.85rem;">
+            <div style="color:var(--muted);font-size:.75rem;">PRIZE</div><strong
+              style="color:var(--gold)">₹1,00,000</strong>
+          </div>
+          <div style="background:var(--surface2);padding:.8rem 1rem;border-radius:8px;font-size:.85rem;">
+            <div style="color:var(--muted);font-size:.75rem;">TEAMS</div><strong>8/16 Registered</strong>
+          </div>
+        </div>
+        <a href="{% url 'register_view' %}" class="btn-primary btn-lg" style="width:fit-content;">Register Your Team
+          →</a>
+      </div>
+    </div> {% endcomment %}
+
+    <!-- FILTER -->
+    <div class="filter-bar">
+      <input type="text" placeholder="🔍 Search tournaments...">
+      <select>
+        <option>All Status</option>
+        <option>Active</option>
+        <option>Upcoming</option>
+        <option>Completed</option>
+      </select>
+      <select>
+        <option>All Sports</option>
+        <option>Football</option>
+        <option>Cricket</option>
+        <option>Basketball</option>
+      </select>
+      <a href="#" class="btn-primary">Filter</a>
+    </div>
+
+
+    <!-- TOURNAMENT GRID -->
+    <div class="content-grid">
+      {% for s in tour %}
+      <div class="tournament-card">
+        <div class="tourn-img">
+          <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80" alt="Tournament">
+          <div class="tourn-badge badge-active">● Active</div>
+        </div>
+        <div class="tourn-body">
+          <h3>{{ s.name }}</h3>
+          <div class="tourn-info">
+            <span>{{ s.sport.name }}</span>
+            <span>📅 {{ s.start_date }} – {{ s.end_date }}</span>
+            <span>📍 {{ s.location }}</span>
+            <span class="tourn-prize">🏆 {{ s.prize }}</span>
+          </div>
+          <p style="font-size:.85rem;color:var(--muted);">Premier inter-college football tournament. 16 teams competing
+            for the championship title.</p>
+        </div>
+        <div class="tourn-footer">
+          <span style="font-size:.85rem;color:var(--muted);">{{ s.registrations.count }}/{{ s.total_teams }} Teams</span>
+          
+          {% if s.user_reg %}
+              {% if s.user_reg.payment_status == 'completed' %}
+                  <button class="btn-primary" style="background:rgba(16,185,129,0.15); color:var(--green); border-color:var(--green); cursor:default;" disabled>Registered ✓</button>
+              {% else %}
+                  <a href="{% url 'payment_view' s.user_reg.id %}" class="btn-primary" style="background:rgba(245,158,11,0.15); color:var(--gold); border-color:var(--gold);">Complete Payment</a>
+              {% endif %}
+          {% elif s.registrations.count >= s.total_teams %}
+              <button class="btn-primary" style="background:var(--surface2); color:var(--muted); border-color:var(--surface2); cursor:not-allowed;" disabled>Full</button>
+          {% else %}
+              <a href="{% url 'tournament_register' s.id %}" class="btn-primary">Register</a>
+          {% endif %}
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+    <!-- ANNOUNCEMENT BOX -->
+    <div
+      style="background:var(--surface);border:1px solid rgba(232,255,58,.2);border-radius:var(--radius);padding:1.5rem 2rem;margin-top:2.5rem;display:flex;align-items:center;gap:1rem;">
+      <div style="font-size:2rem;">📢</div>
+      <div style="flex:1;">
+        <strong style="color:var(--accent)">Announcement:</strong> New tournament registrations for Summer 2027 will
+        open on April 1st. Stay tuned!
+        <div style="font-size:.8rem;color:var(--muted);margin-top:.3rem;">Posted by Admin · Mar 11, 2027</div>
+      </div>
+      <a href="{% url 'register_view' %}" class="btn-primary">Get Notified</a>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-icon">⚡</span>PPN</div>
+        <p>PLAYPAIR NETWORK — Modular sports management.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Platform</h5>
+        <a href="{% url 'players_view' %}">Players</a>
+        <a href="{% url 'teams_view' %}">Teams</a>
+        <a href="{% url 'tournaments_view' %}">Tournaments</a>
+        <a href="{% url 'matches_view' %}">Matches</a>
+      </div>
+      <div class="footer-links">
+        <h5>Access</h5>
+        <a href="{% url 'login_view' %}">Login</a>
+        <a href="{% url 'register_view' %}">Register</a>
+        {% comment %} <a href="{% url 'dashboard_view' %}">Dashboard</a> {% endcomment %}
+      </div>
+      {% comment %} <div class="footer-links">
+        <h5>About</h5><a href="#">Django</a><a href="#">College Project</a>
+      </div> {% endcomment %}
+    </div>
+    {% comment %} <div class="footer-bottom"><span>© 2025 Sports Player Hub</span><span>Built with Django • adminapp & userapp</span> {% endcomment %}
+    </div>
+  </footer>
+  <script src="{% static 'userapp/script.js' %}"></script>
+</body>
+
+</html>

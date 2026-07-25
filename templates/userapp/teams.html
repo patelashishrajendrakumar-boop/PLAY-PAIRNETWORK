@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teams – PLAYPAIR NETWORK</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+</head>
+<body>
+<nav class="navbar">
+  <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+  <ul class="nav-links">
+    <li><a href="{% url 'index_view' %}">Home</a></li>
+    <li><a href="{% url 'players_view' %}">Players</a></li>
+    <li><a href="{% url 'teams_view' %}">Teams</a></li>
+    <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+    <li><a href="{% url 'matches_view' %}">Matches</a></li>
+    {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+  </ul>
+  <div class="nav-auth">
+    {% if user.is_authenticated %}
+      <span style="color:var(--accent); font-weight:500;">
+        👋 {{ user.username }}
+      </span>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+    {% else %}
+      <a href="{% url 'login_view' %}" class="btn-ghost">Login</a>
+      <a href="{% url 'register_view' %}" class="btn-primary">Register</a>
+    {% endif %}
+  <button class="hamburger" onclick="toggleMenu()">☰</button>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb"><a href="{% url 'index_view' %}">Home</a> / Teams</div>
+    <div class="tag">TEAM MANAGEMENT</div>
+    <h1>All <span class="accent">Teams</span></h1>
+    <p>Explore every registered team, their squad, coach, and performance records.</p>
+  </div>
+</section>
+
+<div class="page-content">
+  <div class="filter-bar">
+    <input type="text" placeholder="🔍 Search teams...">
+    <select>
+      <option>All Sports</option>
+      <option>Football</option>
+      <option>Cricket</option>
+      <option>Basketball</option>
+    </select>
+    <select>
+      <option>All Seasons</option>
+      <option>2025</option>
+      <option>2024</option>
+    </select>
+    <a href="#" class="btn-primary">Filter</a>
+  </div>
+
+  {% comment %} <!-- LEADERBOARD TABLE -->
+  <div class="dash-card" style="margin-bottom:2rem;">
+    <h3>Season Standings <a href="#">View Full →</a></h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Team</th>
+          <th>Sport</th>
+          <th>Coach</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>Pts</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--gold)">🥇 1</strong></td>
+          <td><div style="display:flex;align-items:center;gap:.6rem;"><img src="https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=40&q=80" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"><strong>Thunder FC</strong></div></td>
+          <td>Football</td>
+          <td>Mr. Rajiv</td>
+          <td>14</td><td>3</td><td>2</td>
+          <td><strong style="color:var(--accent)">45</strong></td>
+          <td><span class="badge badge-win">Active</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#aaa">🥈 2</strong></td>
+          <td><div style="display:flex;align-items:center;gap:.6rem;"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=40&q=80" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"><strong>Eagles FC</strong></div></td>
+          <td>Football</td>
+          <td>Ms. Priya</td>
+          <td>12</td><td>4</td><td>3</td>
+          <td><strong style="color:var(--accent)">40</strong></td>
+          <td><span class="badge badge-win">Active</span></td>
+        </tr>
+        <tr>
+          <td>🥉 3</td>
+          <td><div style="display:flex;align-items:center;gap:.6rem;"><img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=40&q=80" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"><strong>Storm XI</strong></div></td>
+          <td>Cricket</td>
+          <td>Mr. Arun</td>
+          <td>10</td><td>5</td><td>4</td>
+          <td><strong style="color:var(--accent)">35</strong></td>
+          <td><span class="badge badge-win">Active</span></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><div style="display:flex;align-items:center;gap:.6rem;"><img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=40&q=80" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"><strong>Lions XI</strong></div></td>
+          <td>Cricket</td>
+          <td>Ms. Sneha</td>
+          <td>9</td><td>2</td><td>8</td>
+          <td><strong style="color:var(--accent)">29</strong></td>
+          <td><span class="badge badge-draw">Active</span></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><div style="display:flex;align-items:center;gap:.6rem;"><img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=40&q=80" style="width:32px;height:32px;border-radius:6px;object-fit:cover;"><strong>City Ballers</strong></div></td>
+          <td>Basketball</td>
+          <td>Mr. Sunder</td>
+          <td>7</td><td>1</td><td>6</td>
+          <td><strong style="color:var(--accent)">22</strong></td>
+          <td><span class="badge badge-loss">Inactive</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div> {% endcomment %}
+
+  <!-- TEAM CARDS -->
+  <h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:1.5rem;">Team <span class="accent">Profiles</span></h2>
+  <div class="content-grid">
+    {% for t in tea %}
+    <div class="team-card">
+    
+      <div class="team-card-header">
+        <img src="https://images.unsplash.com/photo-1473976345543-9ffc928e648d?w=600&q=80" alt="Team">
+        <div class="overlay"></div>
+      </div>
+      <img src="{{ t.logo.url }}" class="team-logo" alt="Logo">
+      <div class="team-card-body">
+        <h3>{{ t.name }}</h3>
+        <div class="team-sport">{{ t.sport.name }}</div>
+        <div class="team-meta">
+          <span></span>
+          <span></span>
+          <span>{{ t.established_date }}</span>
+        </div>
+        <div style="margin-top:1rem;text-align:left;">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">Coach: <strong style="color:var(--text)">{{ t.coach }}</strong></div>
+          {% comment %} <div style="font-size:.8rem;color:var(--muted);">Season Record: <strong style="color:var(--green)">14W 3D 2L</strong></div> {% endcomment %}
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;margin-top:1.2rem;">View Team →</a>
+      </div>
+    
+    </div>
+    {% endfor %}
+
+    {% comment %} <div class="team-card">
+      <div class="team-card-header">
+        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80" alt="Team">
+        <div class="overlay"></div>
+      </div>
+      <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=100&q=80" class="team-logo" alt="Logo">
+      <div class="team-card-body">
+        <h3>Eagles FC</h3>
+        <div class="team-sport">⚽ Football</div>
+        <div class="team-meta">
+          <span>👥 16 Players</span>
+          <span>🏆 2 Titles</span>
+          <span>📅 Est. 2019</span>
+        </div>
+        <div style="margin-top:1rem;text-align:left;">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">Coach: <strong style="color:var(--text)">Ms. Priya Menon</strong></div>
+          <div style="font-size:.8rem;color:var(--muted);">Season Record: <strong style="color:var(--green)">12W 4D 3L</strong></div>
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;margin-top:1.2rem;">View Team →</a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-card-header">
+        <img src="https://images.unsplash.com/photo-1631373424800-11f1f2d71a1a?w=600&q=80" alt="Team">
+        <div class="overlay"></div>
+      </div>
+      <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=100&q=80" class="team-logo" alt="Logo">
+      <div class="team-card-body">
+        <h3>Storm XI</h3>
+        <div class="team-sport">🏏 Cricket</div>
+        <div class="team-meta">
+          <span>👥 15 Players</span>
+          <span>🏆 1 Title</span>
+          <span>📅 Est. 2021</span>
+        </div>
+        <div style="margin-top:1rem;text-align:left;">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">Coach: <strong style="color:var(--text)">Mr. Arun Das</strong></div>
+          <div style="font-size:.8rem;color:var(--muted);">Season Record: <strong style="color:var(--green)">10W 5D 4L</strong></div>
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;margin-top:1.2rem;">View Team →</a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-card-header">
+        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80" alt="Team">
+        <div class="overlay"></div>
+      </div>
+      <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=100&q=80" class="team-logo" alt="Logo">
+      <div class="team-card-body">
+        <h3>Lions XI</h3>
+        <div class="team-sport">🏏 Cricket</div>
+        <div class="team-meta">
+          <span>👥 14 Players</span>
+          <span>🏆 0 Titles</span>
+          <span>📅 Est. 2022</span>
+        </div>
+        <div style="margin-top:1rem;text-align:left;">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">Coach: <strong style="color:var(--text)">Ms. Sneha Iyer</strong></div>
+          <div style="font-size:.8rem;color:var(--muted);">Season Record: <strong style="color:var(--gold)">9W 2D 8L</strong></div>
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;margin-top:1.2rem;">View Team →</a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-card-header">
+        <img src="https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=600&q=80" alt="Team">
+        <div class="overlay"></div>
+      </div>
+      <img src="https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=100&q=80" class="team-logo" alt="Logo">
+      <div class="team-card-body">
+        <h3>City Ballers</h3>
+        <div class="team-sport">🏀 Basketball</div>
+        <div class="team-meta">
+          <span>👥 12 Players</span>
+          <span>🏆 1 Title</span>
+          <span>📅 Est. 2021</span>
+        </div>
+        <div style="margin-top:1rem;text-align:left;">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">Coach: <strong style="color:var(--text)">Mr. Sunder Rao</strong></div>
+          <div style="font-size:.8rem;color:var(--muted);">Season Record: <strong style="color:var(--red)">7W 1D 6L</strong></div>
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;margin-top:1.2rem;">View Team →</a>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-card-header">
+        <img src="https://images.unsplash.com/photo-1547380989-a37b30f3b03b?w=600&q=80" alt="Team">
+        <div class="overlay"></div>
+      </div>
+      <img src="https://images.unsplash.com/photo-1547380989-a37b30f3b03b?w=100&q=80" class="team-logo" alt="Logo">
+      <div class="team-card-body">
+        <h3>Royal CC</h3>
+        <div class="team-sport">🏏 Cricket</div>
+        <div class="team-meta">
+          <span>👥 13 Players</span>
+          <span>🏆 2 Titles</span>
+          <span>📅 Est. 2018</span>
+        </div>
+        <div style="margin-top:1rem;text-align:left;">
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:.3rem;">Coach: <strong style="color:var(--text)">Mr. Kapil Dev</strong></div>
+          <div style="font-size:.8rem;color:var(--muted);">Season Record: <strong style="color:var(--green)">11W 3D 5L</strong></div>
+        </div>
+        <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block;margin-top:1.2rem;">View Team →</a>
+      </div>
+    </div> {% endcomment %}
+  
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="logo"><span class="logo-icon">⚡</span>PPN</div><p>PLAYPAIR NETWORK — Modular sports management.</p></div>
+    <div class="footer-links">
+      <h5>Platform</h5>
+      <a href="{% url 'players_view' %}">Players</a>
+      <a href="{% url 'teams_view' %}">Teams</a>
+      <a href="{% url 'tournaments_view' %}">Tournaments</a>
+      <a href="{% url 'matches_view' %}">Matches</a>
+    </div>
+    <div class="footer-links">
+      <h5>Access</h5>
+      <a href="{% url 'login_view' %}">Login</a>
+      <a href="{% url 'register_view' %}">Register</a>
+      {% comment %} <a href="{% url 'dashboard_view' %}">Dashboard</a> {% endcomment %}
+    </div>
+    <div class="footer-links">
+      {% comment %} <h5>About</h5><a href="#">Django</a><a href="#">College Project</a></div> {% endcomment %}
+  </div>
+  {% comment %} <div class="footer-bottom"><span>© 2025 Sports Player Hub</span><span>Built with Django • adminapp & userapp</span></div> {% endcomment %}
+</footer>
+
+<script src="{% static 'userapp/script.js' %}"></script>
+</body>
+</html>

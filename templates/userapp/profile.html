@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPN – My Profile</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+</head>
+
+<body class="page-profile">
+
+    <nav class="navbar">
+        <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+        <ul class="nav-links">
+            <li><a href="{% url 'index_view' %}">Home</a></li>
+            <li><a href="{% url 'players_view' %}">Players</a></li>
+            <li><a href="{% url 'teams_view' %}">Teams</a></li>
+            <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+            {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+        </ul>
+        <div class="nav-auth">
+            <span style="color:var(--accent); font-weight:500;">👋 {{ user.username }}</span>
+            <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+        </div>
+    </nav>
+
+    <section class="hero-mini"
+        style="background: var(--dark-soft); padding: 100px 5% 40px; border-bottom: 1px solid var(--border);">
+        <div class="profile-header-flex" style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap;">
+            <div class="profile-img-container" style="position: relative;">
+                {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="Profile"
+                    style="width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--accent); object-fit: cover;">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=300&q=80" alt="Profile"
+                    style="width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--accent); object-fit: cover;">
+                {% endif %}
+                <div class="rank-badge-large"
+                    style="position: absolute; bottom: 0; right: 0; background: var(--accent); padding: 5px 10px; border-radius: 20px; font-weight: bold; color: var(--dark);">
+                    #12 RANK
+                </div>
+            </div>
+            <div class="profile-main-info">
+                <div class="tag">PLAYER PROFILE</div>
+                <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 4rem; line-height: 1; margin: 10px 0;">
+                    {{ user.first_name }} <span class="accent">{{ user.last_name }}</span>
+                </h1>
+                <p style="color: #aaa; font-size: 1.1rem;">{{ user.email }} | {% if current_player %}{{ current_player.position }} • {{ current_player.team.name }}{% else %}{{ user.bio|truncatewords:10 }}{% endif %}</p>
+
+                <div class="profile-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                    <a href="{% url 'edit_view' %}" class="btn-primary">Edit Profile</a>
+                    <a href="#" class="btn-outline">Download CV</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+
+            <div class="feature-card">
+                <div class="feat-icon">📊</div>
+                <h3>Performance Stats</h3>
+                <div class="mini-stats" style="margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Matches Played</span>
+                        <span class="accent">{% if current_player %}{{ current_player.total_matches }}{% else %}0{% endif %}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Total Score</span>
+                        <span class="accent">{% if current_player %}{{ current_player.total_score }}{% else %}0{% endif %}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Assists</span>
+                        <span class="accent">12</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Win Rate</span>
+                        <span class="accent">68%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feat-icon">👤</div>
+                <h3>Personal Details</h3>
+                <ul style="list-style: none; padding: 0; margin-top: 20px; line-height: 2;">
+                    <li><strong>Username:</strong> {{ user.username }}</li>
+                    <li><strong>Phone:</strong> {{ user.phone_number|default:"Not provided" }}</li>
+                    <li><strong>DOB:</strong> {{ user.date_of_birth|date:"d M Y"|default:"Not provided" }}</li>
+                    <li><strong>Member Since:</strong> {{ user.date_joined|date:"M Y" }}</li>
+                    {% if current_player %}
+                    <li><strong>Jersey Number:</strong> {{ current_player.jersey_number }}</li>
+                    <li><strong>Sport:</strong> {{ current_player.sport.name }}</li>
+                    {% endif %}
+                    <li><strong>College:</strong> National Institute of Sports</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feat-icon">🤝</div>
+                <h3>Current Team</h3>
+                <div style="text-align: center; margin-top: 10px;">
+                    <img src="https://images.unsplash.com/photo-1606925797300-0b35e9d1794e?w=80&q=80" alt="Team"
+                        class="team-logo-sm" style="width: 60px; height: 60px;">
+                    <h4 style="margin: 10px 0;">Thunder FC</h4>
+                    <span class="tag" style="background: rgba(255, 183, 3, 0.1); color: var(--accent);">PRO
+                        LEAGUE</span>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <footer class="footer">
+        {% comment %} <div class="footer-bottom">
+            <span>© 2025 Sports Player Hub — Profile Section</span>
+            <span>Built with Django</span>
+        </div> {% endcomment %}
+    </footer>
+
+    <script src="{% static 'userapp/script.js' %}"></script>
+</body>
+
+</html>

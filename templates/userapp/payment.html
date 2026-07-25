@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment – {{ registration.tournament.name }} – PLAYPAIR NETWORK</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+  <style>
+    .payment-container {
+      max-width: 500px;
+      margin: 2rem auto;
+      background: var(--surface);
+      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(232, 255, 58, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .payment-summary {
+      background: rgba(232, 255, 58, 0.05);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .amount-display {
+        font-size: 2.5rem;
+        font-family: var(--font-display);
+        color: var(--accent);
+        margin: 0.5rem 0;
+    }
+
+    .card-element {
+        background: var(--surface2);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .payment-methods {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .method-icon {
+        background: var(--surface2);
+        padding: 0.8rem;
+        border-radius: 8px;
+        flex: 1;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.05);
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 0.9rem;
+    }
+
+    .method-icon:hover {
+        border-color: var(--accent);
+        background: rgba(232, 255, 58, 0.1);
+    }
+
+    .method-icon.active {
+        border-color: var(--accent);
+        background: rgba(232, 255, 58, 0.2);
+        color: var(--accent);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'index_view' %}">Home</a></li>
+      <li><a href="{% url 'players_view' %}">Players</a></li>
+      <li><a href="{% url 'teams_view' %}">Teams</a></li>
+      <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+      <li><a href="{% url 'matches_view' %}">Matches</a></li>
+      {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+    </ul>
+    <div class="nav-auth">
+      {% if user.is_authenticated %}
+      <span style="color:var(--accent); font-weight:500;">
+        👋 {{ user.username }}
+      </span>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="tag">💳 SECURE PAYMENT</div>
+      <h1>Complete <span class="accent">Payment</span></h1>
+      <p>Secure your spot in the tournament by completing the registration fee.</p>
+    </div>
+  </section>
+
+  <div class="page-content">
+    {% if messages %}
+    <div style="max-width: 500px; margin: 0 auto 2rem;">
+      {% for message in messages %}
+      <div
+        style="padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid; 
+                  {% if message.tags == 'success' %} background: rgba(16,185,129,0.1); border-color: var(--green); color: var(--green);
+                  {% elif message.tags == 'error' %} background: rgba(255,68,68,0.1); border-color: var(--red); color: var(--red);
+                  {% elif message.tags == 'warning' %} background: rgba(245,158,11,0.1); border-color: var(--gold); color: var(--gold);
+                  {% else %} background: rgba(58,142,255,0.1); border-color: var(--accent2); color: var(--accent2); {% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="payment-container">
+      <div class="payment-summary">
+        <p style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Tournament Fee</p>
+        <div class="amount-display">₹{{ registration.tournament.entry_fee }}</div>
+        <p style="font-weight: 600; font-size: 1.1rem; margin-top: 0.5rem;">{{ registration.tournament.name }}</p>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem;">Player: {{ registration.player_name }}</p>
+      </div>
+
+      <div class="payment-methods">
+        <div class="method-icon active" onclick="setMethod('Card', this)">💳 Card</div>
+        <div class="method-icon" onclick="setMethod('UPI', this)">🏦 UPI</div>
+        <div class="method-icon" onclick="setMethod('Wallet', this)">📱 Wallet</div>
+      </div>
+
+      <form method="POST" id="paymentForm">
+        {% csrf_token %}
+        <input type="hidden" name="payment_method" id="payment_method" value="Card">
+        
+        <div id="cardFields">
+            <div class="card-element">
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="display: block; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase;">Card Number</label>
+                    <input type="text" placeholder="XXXX XXXX XXXX 4242" class="form-control" style="background: transparent; border: none; color: #fff; font-family: monospace; letter-spacing: 2px; font-size: 1.1rem; width: 100%;">
+                </div>
+                <div style="display: flex; gap: 1.5rem;">
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase;">Expiry</label>
+                        <input type="text" placeholder="12/28" class="form-control" style="background: transparent; border: none; color: #fff; font-size: 1rem; width: 100%;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase;">CVC</label>
+                        <input type="text" placeholder="***" class="form-control" style="background: transparent; border: none; color: #fff; font-size: 1rem; width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase;">Transaction ID / Reference Number</label>
+            <input type="text" name="transaction_id" required placeholder="Enter Transaction ID" 
+                   style="width: 100%; padding: 1rem; background: var(--surface2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+        </div>
+
+        <button type="submit" class="btn-primary btn-lg" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+            Submit Payment Details & Confirm →
+        </button>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Secure SSL Encrypted Submission
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function setMethod(method, el) {
+        document.getElementById('payment_method').value = method;
+        document.querySelectorAll('.method-icon').forEach(icon => icon.classList.remove('active'));
+        el.classList.add('active');
+        
+        const cardFields = document.getElementById('cardFields');
+        if (method === 'Card') {
+            cardFields.style.display = 'block';
+        } else {
+            cardFields.style.display = 'none';
+        }
+    }
+  </script>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-icon">⚡</span>PPN</div>
+        <p>PLAYPAIR NETWORK — Modular sports management.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="{% static 'userapp/script.js' %}"></script>
+</body>
+</html>

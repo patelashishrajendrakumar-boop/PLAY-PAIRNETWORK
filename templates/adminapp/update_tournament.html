@@ -1,0 +1,127 @@
+{% extends 'adminapp/master.html' %}
+{% load static %}
+{% block content %}
+
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
+    <main class="nxl-container apps-container">
+        <div class="nxl-content without-header nxl-full-content">
+            <!-- [ Main Content ] start -->
+            <div class="main-content d-flex">
+                <!-- [ Main Area  ] start -->
+                <div class="content-area" data-scrollbar-target="#psScrollbarInit">
+                    <div class="content-area-header bg-white sticky-top">
+                        <div class="page-header-left">
+                            <a href="javascript:void(0);" class="app-sidebar-open-trigger me-2">
+                                <i class="feather-align-left fs-24"></i>
+                            </a>
+                        </div>
+                        <div class="page-header-right ms-auto">
+                            <div class="d-flex align-items-center gap-3 page-header-right-items-wrapper">
+                                <a href="javascript:void(0);" class="text-danger">Cancel</a>
+                                <a href="javascript:void(0);" class="btn btn-primary successAlertMessage">
+                                    <i class="feather-save me-2"></i>
+                                    <span>Save Changes</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-area-body">
+                        <div class="card mb-0">
+                            <div class="card-body">
+
+                                <!-- ================= IMAGE UPLOAD ================= -->
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-5">
+                                        <h5 class="card-title">Create Tournament</h5> 
+                                        {% comment %} <div
+                                        class="wd-100 ht-100 position-relative overflow-hidden border border-gray-2 rounded">
+                                         <img src="{% static 'adminapp/assets/images/logo-abbr.png' %}"
+                                            class="upload-pic img-fluid rounded h-100 w-100" alt="">
+                                            <div
+                                             class="position-absolute start-50 top-50 translate-middle h-100 w-100 hstack align-items-center justify-content-center c-pointer upload-button">
+                                             <i class="feather feather-camera"></i>
+                                            </div>
+                                            <input class="file-upload" type="file" accept="image/*">
+                                        </div> {% endcomment %}
+                                    </div>
+
+                                 <!-- ================= BASIC INPUTS ================= -->
+                                    <div class="mb-1">
+                                         <label class="form-label">Name</label>
+                                         <input type="text"  name="name" value="{{tournament.name}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class=" mb-5">
+                                        <label for="inputText" class="col-sm-2 col-form-label">Sport</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-select" name="sport" id="floatingSelect" aria-label="Floating label select example" required>
+                                                <option value="">Open this select menu</option>
+                                                {% for v in sport %}
+                                                <option value="{{v.id}}" {% if v.id == tournament.sport.id %}selected{% endif %}>{{v.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="md-1">
+                                         <label class="form-label">Start_date</label>
+                                         <input type="date"  name="start_date" value="{{tournament.start_date|date:'Y-m-d'}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">End_date</label>
+                                         <input type="date"  name="end_date" value="{{tournament.end_date|date:'Y-m-d'}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+                                    
+                                    <div class="mb-1">
+                                         <label class="form-label">Location</label>
+                                         <input type="text"  name="location" value="{{tournament.location}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Prize</label>
+                                         <input type="number"  name="prize" value="{{tournament.prize}}" class="form-control"> 
+                                         {% comment %} placeholder="description" {% endcomment %}
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Description</label>
+                                         <input type="text"  name="description" value="{{tournament.description}}" class="form-control"> 
+                                     </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Total Teams</label>
+                                         <input type="number" name="total_teams" value="{{tournament.total_teams}}" class="form-control">
+                                    </div>
+
+                                    <div class="mb-1">
+                                         <label class="form-label">Entry Fee (₹)</label>
+                                         <input type="number" name="entry_fee" value="{{tournament.entry_fee}}" class="form-control">
+                                    </div>
+
+                                 <!-- ================= DATE ================= -->
+                                    <div class="mb-1">
+                                         <label class="form-label">Created_at</label>
+                                         <input type="date" name="created_at" value="{{tournament.created_at|date:'Y-m-d'}}" class="form-control">
+                                    </div>
+
+
+                                 <!-- ================= SUBMIT BUTTON ================= -->
+                                    <div class="mb-0 text-end">
+                                        <button type="reset" class="btn btn-light me-2">Reset</button>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+{% endblock %}

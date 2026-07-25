@@ -1,0 +1,279 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard – PLAYPAIR NETWORK</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+<style>
+.donut-wrap { display:flex;align-items:center;gap:1.5rem; }
+.donut {
+  width:100px;height:100px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(var(--accent) 0% 58%,var(--accent2) 58% 82%,var(--red) 82% 100%);
+  position:relative;
+}
+.donut::after { content:'';position:absolute;inset:20px;border-radius:50%;background:var(--surface); }
+.donut-legend { display:flex;flex-direction:column;gap:.5rem; }
+.legend-item { display:flex;align-items:center;gap:.5rem;font-size:.82rem; }
+.legend-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+.mini-bar-row { display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem; }
+.mini-bar-label { font-size:.8rem;color:var(--muted);width:80px;flex-shrink:0; }
+.mini-bar-track { flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden; }
+.mini-bar-fill { height:100%;border-radius:3px;background:var(--accent); }
+.mini-bar-val { font-size:.8rem;font-weight:600;width:30px;text-align:right;flex-shrink:0; }
+.pending-item { display:flex;align-items:center;gap:.8rem;padding:.8rem 0;border-bottom:1px solid var(--border); }
+.pending-item:last-child { border:none; }
+.pending-avatar { width:36px;height:36px;border-radius:50%;object-fit:cover; }
+.pending-info { flex:1; }
+.pending-name { font-size:.88rem;font-weight:600; }
+.pending-meta { font-size:.78rem;color:var(--muted); }
+.pending-actions { display:flex;gap:.4rem; }
+.btn-sm { padding:.3rem .7rem;font-size:.78rem;border-radius:6px;border:none;cursor:pointer;font-weight:600;transition:.2s; }
+.btn-approve { background:rgba(16,185,129,.15);color:var(--green);border:1px solid var(--green); }
+.btn-approve:hover { background:var(--green);color:#fff; }
+.btn-reject { background:rgba(255,68,68,.1);color:var(--red);border:1px solid var(--red); }
+.btn-reject:hover { background:var(--red);color:#fff; }
+</style>
+</head>
+<body>
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">⚡ PPN</div>
+    <div class="sidebar-user">
+      {% if user.profile_image %}
+      <img src="{{ user.profile_image.url }}" class="sidebar-avatar" alt="User">
+      {% else %}
+      <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=80&q=80" class="sidebar-avatar" alt="User">
+      {% endif %}
+      <div>
+        <div class="sidebar-username">{{user.username}}</div>
+        <div class="sidebar-role">● {{user.role|title}}</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Main</div>
+      <a href="{% url 'dashboard_view' %}" class="sidebar-item active"><span class="icon">📊</span> Dashboard</a>
+      <a href="{% url 'players_view' %}" class="sidebar-item"><span class="icon">👤</span> Players</a>
+      <a href="{% url 'teams_view' %}" class="sidebar-item"><span class="icon">🛡️</span> Teams</a>
+      <a href="{% url 'tournaments_view' %}" class="sidebar-item"><span class="icon">🏆</span> Tournaments</a>
+      <a href=" {% url 'matches_view' %}" class="sidebar-item"><span class="icon">⚽</span> Matches</a>
+      <a href="{% url 'chat_home' %}" class="sidebar-item"><span class="icon">💬</span> Messages</a>
+      <div class="sidebar-section">Management</div>
+      <a href="{% url 'my_requests' %}" class="sidebar-item"><span class="icon">✅</span> Approvals {% if total_pending %}<span style="margin-left:auto;background:var(--red);color:#fff;font-size:.7rem;padding:.1rem .4rem;border-radius:4px;">{{ total_pending }}</span>{% endif %}</a>
+      <a href="#" class="sidebar-item"><span class="icon">📈</span> Analytics</a>
+      <a href="#" class="sidebar-item"><span class="icon">📄</span> Reports</a>
+      <a href="#" class="sidebar-item"><span class="icon">📢</span> Announcements</a>
+      <div class="sidebar-section">System</div>
+      <a href="{% url 'edit_view' %}" class="sidebar-item"><span class="icon">⚙️</span> Settings</a>
+      <a href="#" class="sidebar-item"><span class="icon">👥</span> User Management</a>
+    </nav>
+    <div class="sidebar-logout">
+      <a href="{% url 'login_view' %}" class="sidebar-item" style="color:var(--red);"><span class="icon">🚪</span> Logout</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+    <div class="dash-header">
+      <div class="dash-greeting">
+        <h2>Good Morning, {{ user.username }} 👋</h2>
+        <p>{{ now|date:"l, F j, Y" }} · Here's what's happening today</p>
+      </div>
+      <div style="display:flex;gap:.8rem;align-items:center;">
+        <a href="#" class="btn-ghost" style="font-size:.85rem;">📄 Generate Report</a>
+        <a href="#" class="btn-primary" style="font-size:.85rem;">+ Add Player</a>
+      </div>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+      <div class="kpi-card kpi-1">
+        <div class="kpi-icon">👤</div>
+        <div class="kpi-label">Total Players</div>
+        <div class="kpi-value">{{ total_players }}</div>
+        <div class="kpi-change" style="color:var(--green)">Active members</div>
+      </div>
+      <div class="kpi-card kpi-2">
+        <div class="kpi-icon">🛡️</div>
+        <div class="kpi-label">Active Teams</div>
+        <div class="kpi-value">{{ active_teams }}</div>
+        <div class="kpi-change" style="color:var(--green)">Registered teams</div>
+      </div>
+      <div class="kpi-card kpi-3">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-label">Tournaments</div>
+        <div class="kpi-value">{{ total_tournaments }}</div>
+        <div class="kpi-change">{{ active_tournaments }} active, {{ upcoming_tournaments }} upcoming</div>
+      </div>
+      <div class="kpi-card kpi-4">
+        <div class="kpi-icon">⚽</div>
+        <div class="kpi-label">Matches This Month</div>
+        <div class="kpi-value">{{ matches_this_month }}</div>
+        <div class="kpi-change" style="color:var(--green)">Scheduled matches</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dash-grid">
+      <!-- PERFORMANCE CHART -->
+      <div class="dash-card">
+        <h3>Monthly Match Activity <a href="#">Details →</a></h3>
+        <div class="bar-chart" style="height:140px;margin-bottom:1rem;">
+          <div class="bar-col"><div class="bar" style="height:60%;"><div class="bar-fill" style="height:100%;"></div></div><div class="bar-label">Oct</div></div>
+          <div class="bar-col"><div class="bar" style="height:75%;"><div class="bar-fill" style="height:100%;background:var(--accent2);"></div></div><div class="bar-label">Nov</div></div>
+          <div class="bar-col"><div class="bar" style="height:45%;"><div class="bar-fill" style="height:100%;background:var(--gold);"></div></div><div class="bar-label">Dec</div></div>
+          <div class="bar-col"><div class="bar" style="height:80%;"><div class="bar-fill" style="height:100%;"></div></div><div class="bar-label">Jan</div></div>
+          <div class="bar-col"><div class="bar" style="height:95%;"><div class="bar-fill" style="height:100%;background:var(--accent2);"></div></div><div class="bar-label">Feb</div></div>
+          <div class="bar-col"><div class="bar" style="height:70%;"><div class="bar-fill" style="height:100%;"></div></div><div class="bar-label">Mar</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent);"></div>Football</div>
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent2);"></div>Cricket</div>
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;"><div style="width:10px;height:10px;border-radius:2px;background:var(--gold);"></div>Basketball</div>
+        </div>
+
+        <div style="margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.2rem;">
+          <h4 style="font-size:.9rem;font-weight:700;margin-bottom:1rem;">Top Performers (Total Score)</h4>
+          {% for p in top_performers %}
+          <div class="mini-bar-row">
+            <div class="mini-bar-label" style="display: flex; align-items: center; gap: 5px;">
+              <span style="font-weight: 700;">{{ p.name }}</span>
+              <span style="font-size: 0.7rem; color: var(--muted);">({{ p.sport.name }})</span>
+              {% if p.is_online %}
+              <span style="width: 6px; height: 6px; background: #00ff88; border-radius: 50%; display: inline-block;"></span>
+              {% endif %}
+            </div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:{{ p.total_score }}%; {% if forloop.counter == 2 %}background:var(--accent2);{% elif forloop.counter == 3 %}background:var(--gold);{% elif forloop.counter == 4 %}background:var(--green);{% endif %}"></div></div>
+            <div class="mini-bar-val">{{ p.total_score }}</div>
+          </div>
+          {% empty %}
+          <p style="font-size:.8rem;color:var(--muted);">No player data available.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <!-- SPORT BREAKDOWN -->
+        <div class="dash-card">
+          <h3>Players by Sport</h3>
+          <div class="donut-wrap">
+            <div class="donut"></div>
+            <div class="donut-legend">
+              {% for s in players_by_sport %}
+              <div class="legend-item"><div class="legend-dot" style="{% if forloop.counter == 1 %}background:var(--accent){% elif forloop.counter == 2 %}background:var(--accent2){% else %}background:var(--red){% endif %}"></div> {{ s.sport__name }} – {{ s.count }}</div>
+              {% empty %}
+              <div class="legend-item">No data</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <!-- PENDING APPROVALS -->
+        <div class="dash-card">
+          <h3 style="margin-bottom:.8rem;">Pending Approvals <a href="{% url 'my_requests' %}">View All →</a></h3>
+          {% for app in pending_approvals %}
+          <div class="pending-item">
+            {% if app.sender.profile_image %}
+            <img src="{{ app.sender.profile_image.url }}" class="pending-avatar">
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=80&q=80" class="pending-avatar">
+            {% endif %}
+            <div class="pending-info">
+              <div class="pending-name">{{ app.sender.username }}</div>
+              <div class="pending-meta">Request to {{ app.receiver.name }}</div>
+            </div>
+            <div class="pending-actions">
+              <a href="{% url 'approve_request' app.id %}" class="btn-sm btn-approve" style="text-decoration:none;">✓</a>
+              <a href="{% url 'reject_request' app.id %}" class="btn-sm btn-reject" style="text-decoration:none;">✗</a>
+            </div>
+          </div>
+          {% empty %}
+          <p style="font-size:.8rem;color:var(--muted);padding:1rem 0;">No pending approvals.</p>
+          {% endfor %}
+        </div>
+
+        <!-- MY TOURNAMENTS -->
+        <div class="dash-card">
+          <h3 style="margin-bottom:.8rem;">My Tournaments <a href="{% url 'tournaments_view' %}">Browse More →</a></h3>
+          {% for t in my_tournaments %}
+          <div class="pending-item">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🏆</div>
+            <div class="pending-info">
+              <div class="pending-name">{{ t.name }}</div>
+              <div class="pending-meta">{{ t.sport.name }} · {{ t.start_date }}</div>
+            </div>
+            <div class="pending-actions">
+              <span class="badge" style="background:rgba(16,185,129,.15);color:var(--green);font-size:.7rem;">Enrolled</span>
+            </div>
+          </div>
+          {% empty %}
+          <p style="font-size:.8rem;color:var(--muted);padding:1rem 0;">You haven't registered for any tournaments yet.</p>
+          <a href="{% url 'tournaments_view' %}" class="btn-sm btn-approve" style="text-decoration:none;display:inline-block;text-align:center;">Register Now</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT MATCHES TABLE -->
+    <div class="dash-card" style="margin-bottom:1.5rem;">
+      <h3>Recent Matches <a href="{% url 'matches_view' %}">View All →</a></h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Match</th>
+            <th>Tournament</th>
+            <th>Date</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in recent_matches %}
+          <tr>
+            <td><strong>{{ m.team_one }} vs {{ m.team_two }}</strong></td>
+            <td>{{ m.tournament.name }}</td>
+            <td>{{ m.match_date }}</td>
+            <td><strong style="color:var(--accent)">{{ m.team_one_score }} – {{ m.team_two_score }}</strong></td>
+            <td>
+              {% if m.match_date < now %}
+              <span class="badge badge-win">Completed</span>
+              {% elif m.match_date == now %}
+              <span class="badge" style="background:rgba(255,68,68,.15);color:var(--red)">🔴 Live</span>
+              {% else %}
+              <span class="badge badge-draw">📅 Upcoming</span>
+              {% endif %}
+            </td>
+            <td><a href="#" style="color:var(--accent);font-size:.82rem;">Details →</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);">No matches recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ACTIVITY FEED -->
+    <div class="dash-card">
+      <h3>Recent Activity</h3>
+      <div class="activity-list">
+        {% for app in pending_approvals %}
+        <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div class="activity-text">Player <strong>{{ app.sender.username }}</strong> requested to connect.<span>New</span></div></div>
+        {% endfor %}
+        {% for m in recent_matches %}
+        <div class="activity-item"><div class="activity-dot" style="background:var(--accent)"></div><div class="activity-text">Match <strong>{{ m.team_one }} vs {{ m.team_two }}</strong> recorded.<span>{{ m.match_date }}</span></div></div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="{% static 'userapp/script.js' %}"></script>
+</body>
+</html> {% endcomment %}

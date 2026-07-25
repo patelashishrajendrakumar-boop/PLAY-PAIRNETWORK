@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Requests – PLAYPAIR NETWORK</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'userapp/style.css' %}">
+  <style>
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: rgba(255, 204, 0, 0.1);
+      color: #ffcc00;
+      border: 1px solid #ffcc00;
+    }
+
+    .status-accepted {
+      background: rgba(0, 255, 136, 0.1);
+      color: #00ff88;
+      border: 1px solid #00ff88;
+    }
+
+    .status-rejected {
+      background: rgba(255, 68, 68, 0.1);
+      color: #ff4444;
+      border: 1px solid #ff4444;
+    }
+
+    .request-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .request-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+    }
+
+    .player-info {
+      flex-grow: 1;
+    }
+
+    .player-info h3 {
+      margin: 0;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 1px;
+      font-size: 1.5rem;
+    }
+
+    .player-info p {
+      margin: 0.2rem 0 0;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .player-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="{% url 'index_view' %}" class="logo"><span class="logo-icon">⚡</span>PPN</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'index_view' %}">Home</a></li>
+      <li><a href="{% url 'players_view' %}">Players</a></li>
+      <li><a href="{% url 'chat_home' %}">Messages</a></li>
+      <li><a href="{% url 'teams_view' %}">Teams</a></li>
+      <li><a href="{% url 'tournaments_view' %}">Tournaments</a></li>
+      <li><a href="{% url 'matches_view' %}">Matches</a></li>
+      {% comment %} <li><a href="{% url 'dashboard_view' %}">Dashboard</a></li> {% endcomment %}
+    </ul>
+    <div class="nav-auth">
+      {% if user.is_authenticated %}
+      <a href="{% url 'my_requests' %}" class="btn-ghost" style="color:var(--accent);">My Requests</a>
+      <a href="{% url 'profile_view' %}" class="btn-ghost">Profile</a>
+      <a href="{% url 'logout_view' %}" class="btn-primary">Logout</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="breadcrumb"><a href="{% url 'index_view' %}">Home</a> / My Requests</div>
+      <div class="tag">ACTIVITY LOG</div>
+      <h1>Request <span class="accent">Management</span></h1>
+      <p>Manage the requests you've sent to other players and review applications sent to you.</p>
+    </div>
+  </section>
+
+  <div class="page-content">
+    <div style="max-width: 900px; margin: 0 auto;">
+
+      {% if is_player %}
+      <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+        <div class="tag">INCOMING</div>
+        <h2 style="font-size: 2rem;">Received <span class="accent">Requests</span></h2>
+      </div>
+
+      <div style="margin-bottom: 4rem;">
+        {% for r in received_reqs %}
+        <div class="request-card" style="border-left: 4px solid var(--accent2);">
+          <div class="player-info">
+            <h3>Player Request from: {{ r.sender.username }}</h3>
+            <p>Received on {{ r.created_at|date:"M d, Y" }}</p>
+            <div style="margin-top: 0.5rem;">
+              <span class="status-badge status-{{ r.status }}">{{ r.status }}</span>
+            </div>
+          </div>
+
+          {% if r.status == 'pending' %}
+          <div style="display: flex; gap: 0.5rem;">
+            <a href="{% url 'approve_request' r.id %}" class="btn-primary"
+              style="background: var(--green); color: #fff;">Approve</a>
+            <a href="{% url 'reject_request' r.id %}" class="btn-ghost"
+              style="border-color: var(--red); color: var(--red);">Reject</a>
+          </div>
+          {% elif r.status == 'accepted' %}
+          <div style="display: flex; gap: 0.5rem;">
+            <a href="{% url 'chat_with_user' r.sender.username %}" class="btn-primary"
+              style="background: var(--accent); color: #000;">Chat</a>
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p
+          style="color: var(--muted); text-align: center; padding: 2rem; border: 1px dashed var(--border); border-radius: 12px;">
+          No incoming requests yet.</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="section-header" style="text-align: left; margin-bottom: 2rem;">
+        <div class="tag">OUTGOING</div>
+        <h2 style="font-size: 2rem;">Sent <span class="accent">Applications</span></h2>
+      </div>
+
+      <div class="sent-requests-list">
+        {% for r in sent_reqs %}
+        <div class="request-card">
+          <img src="{{ r.receiver.photo.url }}" alt="Player" class="player-img">
+          <div class="player-info">
+            <h3>{{ r.receiver.name }}</h3>
+            <p>Sent on {{ r.created_at|date:"M d, Y" }}</p>
+          </div>
+          <div class="status-badge status-{{ r.status }}">
+            {{ r.status }}
+          </div>
+          {% if r.status == 'accepted' %}
+          <div style="margin-left: 1rem;">
+            <a href="{% url 'chat_with_user' r.receiver.name %}" class="btn-primary"
+              style="background: var(--accent); color: #000;">Chat</a>
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <div
+          style="text-align: center; padding: 4rem 2rem; background: var(--surface); border-radius: 20px; border: 1px dashed var(--border);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">empty</div>
+          <h3>No Requests Sent Yet</h3>
+          <p>Browse our player roster to start sending applications.</p>
+          <a href="{% url 'players_view' %}" class="btn-primary"
+            style="margin-top: 1.5rem; display: inline-block;">Browse
+            Players</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    {% comment %} <div class="footer-bottom">
+      <span>© 2025 Sports Player Hub</span>
+      <span>Built with Django • adminapp & userapp</span>
+    </div> {% endcomment %}
+  </footer>
+
+</body>
+
+</html>

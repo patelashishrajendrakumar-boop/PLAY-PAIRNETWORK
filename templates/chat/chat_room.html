@@ -1,0 +1,127 @@
+{% extends 'chat/chat_base.html' %}
+
+{% block title %}Chat with {{ other_user.username }} – PPN{% endblock %}
+
+{% block chat_content %}
+<div class="chat-header">
+    <div class="profile-pic" style="background: var(--accent);">
+        {{ other_user.username|slice:":1"|upper }}
+    </div>
+    <div style="flex-grow: 1;">
+        <div style="font-weight: 500; font-size: 1.1rem;">{{ other_user.username }}</div>
+        <div style="font-size: 0.8rem; color: {% if other_user.is_online %}#22c55e{% else %}var(--wa-text-dim){% endif %};">
+            {% if other_user.is_online %}online{% else %}offline{% endif %}
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="{% url 'delete_chat' other_user.username %}" class="delete-chat-btn" onclick="return confirm('Are you sure you want to clear this chat?')">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+            </svg>
+        </a>
+    </div>
+</div>
+
+<div class="chat-messages" id="chat-messages">
+    {% for msg in chat_messages %}
+    <div class="msg {% if msg.sender == request.user %}msg-sent{% else %}msg-received{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+            <span>{{ msg.content }}</span>
+            {% if msg.sender == request.user %}
+            <a href="{% url 'delete_message' msg.id %}" class="delete-msg" onclick="return confirm('Delete this message?')">
+                &times;
+            </a>
+            {% endif %}
+        </div>
+        <div class="msg-time">
+            {{ msg.timestamp|date:"H:i" }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="input-area">
+    <input type="text" id="chat-input" class="input-box" placeholder="Type a message" autocomplete="off">
+    <button id="send-btn" class="send-btn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"></path>
+        </svg>
+    </button>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+    const roomName = "{{ room_name }}";
+    const currentUser = "{{ request.user.username }}";
+
+    console.log("Attempting to connect to room:", roomName);
+    const chatSocket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://')
+        + window.location.host
+        + '/ws/chat/'
+        + roomName
+        + '/'
+    );
+
+    chatSocket.onopen = function (e) {
+        console.log("WebSocket connected successfully!");
+    };
+
+    chatSocket.onerror = function (e) {
+        console.error("WebSocket error observed:", e);
+    };
+
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly. Code:', e.code);
+    };
+
+    const messagesContainer = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // Scroll to bottom on load
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const isSent = data.username === currentUser;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${isSent ? 'msg-sent' : 'msg-received'}`;
+
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+        msgDiv.innerHTML = `
+            ${data.message}
+            <div class="msg-time">${timeStr}</div>
+        `;
+
+        messagesContainer.appendChild(msgDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            chatInput.value = '';
+        }
+    }
+
+    sendBtn.onclick = sendMessage;
+
+    chatInput.onkeyup = function (e) {
+        if (e.keyCode === 13) {
+            sendMessage();
+        }
+    };
+</script>
+{% endblock %}
